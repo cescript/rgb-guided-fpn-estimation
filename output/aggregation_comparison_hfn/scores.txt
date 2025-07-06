@@ -1,0 +1,48 @@
+# MULTIVIEW-2,psnr, ssim, gmsd
+40.5050, 0.9759, 0.0202
+# SAFTA-RGB-2,psnr, ssim, gmsd
+43.6881, 0.9938, 0.0081
+# SAFTA-RGB-OLS-2,psnr, ssim, gmsd
+41.5139, 0.9905, 0.0124
+# MULTIVIEW-4,psnr, ssim, gmsd
+43.1787, 0.9885, 0.0125
+# SAFTA-RGB-4,psnr, ssim, gmsd
+45.0368, 0.9950, 0.0061
+# SAFTA-RGB-OLS-4,psnr, ssim, gmsd
+43.2028, 0.9920, 0.0094
+# MULTIVIEW-6,psnr, ssim, gmsd
+44.6916, 0.9930, 0.0082
+# SAFTA-RGB-6,psnr, ssim, gmsd
+45.6926, 0.9955, 0.0055
+# SAFTA-RGB-OLS-6,psnr, ssim, gmsd
+44.0820, 0.9932, 0.0083
+# MULTIVIEW-8,psnr, ssim, gmsd
+45.5850, 0.9950, 0.0059
+# SAFTA-RGB-8,psnr, ssim, gmsd
+46.0784, 0.9958, 0.0053
+# SAFTA-RGB-OLS-8,psnr, ssim, gmsd
+44.6413, 0.9939, 0.0076
+# MULTIVIEW-10,psnr, ssim, gmsd
+46.1436, 0.9959, 0.0047
+# SAFTA-RGB-10,psnr, ssim, gmsd
+46.3293, 0.9960, 0.0051
+# SAFTA-RGB-OLS-10,psnr, ssim, gmsd
+45.0347, 0.9944, 0.0073
+# MULTIVIEW-12,psnr, ssim, gmsd
+46.5592, 0.9965, 0.0039
+# SAFTA-RGB-12,psnr, ssim, gmsd
+46.4674, 0.9960, 0.0051
+# SAFTA-RGB-OLS-12,psnr, ssim, gmsd
+45.3153, 0.9947, 0.0070
+# MULTIVIEW-14,psnr, ssim, gmsd
+46.8190, 0.9969, 0.0035
+# SAFTA-RGB-14,psnr, ssim, gmsd
+46.5607, 0.9961, 0.0050
+# SAFTA-RGB-OLS-14,psnr, ssim, gmsd
+45.5270, 0.9950, 0.0068
+# MULTIVIEW-16,psnr, ssim, gmsd
+47.0536, 0.9972, 0.0031
+# SAFTA-RGB-16,psnr, ssim, gmsd
+46.6225, 0.9961, 0.0050
+# SAFTA-RGB-OLS-16,psnr, ssim, gmsd
+45.6889, 0.9951, 0.0067

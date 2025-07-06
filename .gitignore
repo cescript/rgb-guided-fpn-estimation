@@ -1,0 +1,9 @@
+.idea
+__pycache__
+venv
+output
+*.pth
+*.zip
+*.png
+dataloader/dataset/images
+.DS_Store

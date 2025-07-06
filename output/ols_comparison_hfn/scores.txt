@@ -1,0 +1,6 @@
+# SAFTA-RGB-NONE,psnr, ssim, gmsd
+41.5458, 0.9906, 0.0123
+# SAFTA-RGB-OLS,psnr, ssim, gmsd
+44.6407, 0.9939, 0.0076
+# SAFTA-RGB,psnr, ssim, gmsd
+46.0784, 0.9958, 0.0053
