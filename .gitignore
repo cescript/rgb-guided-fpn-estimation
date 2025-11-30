@@ -6,5 +6,5 @@ output
 *.zip
 *.png
 dataloader/dataset/llvip
-dataloader/dataset/images
+dataloader/dataset/m3fd
 .DS_Store

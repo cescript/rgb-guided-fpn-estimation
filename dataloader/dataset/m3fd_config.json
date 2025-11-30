@@ -1,6 +1,6 @@
 {
     "dataset_name": "M3FD",
-    "dataset_path": "dataloader/dataset/images",
+    "dataset_path": "dataloader/dataset/m3fd",
     "rgb_subdirectory": "Vis",
     "irc_subdirectory": "Ir",
     "resize_after_load": [288, 320],
