@@ -69,4 +69,4 @@ class LoadFPNDataset:
     @staticmethod
     def gaus2d(crop_size, mx=0, my=0, sx=1, sy=1):
         x, y = np.indices((crop_size[1], crop_size[0]))
-        return np.exp(-((x - mx) ** 2. / (2. * sx ** 2.) + (y - my) ** 2. / (2. * sy ** 2.)))
+        return np.exp(-((x - mx) ** 2. / (2. * sx ** 2.) + (y - my) ** 2. / (2. * sy ** 2.))).transpose()
