@@ -1,0 +1,7 @@
+{
+    "dataset_name": "LLVIP",
+    "dataset_path": "dataloader/dataset/llvip",
+    "rgb_subdirectory": "rgb",
+    "irc_subdirectory": "infrared",
+    "resize_after_load": [256, 320]
+}
