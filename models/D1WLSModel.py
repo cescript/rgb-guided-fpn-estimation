@@ -11,7 +11,7 @@ class D1WLSModel:
     # constructor for the D1WLS model
     def __init__(self):
         # get the device
-        self.device = GetDevice
+        self.device = GetDevice()
 
         # define the D1WLS model using the D1WLSDESTRIPEDEMO parameters
         self.d1wls_model = D1WLSNetwork(lamda=40, titer=3).to(self.device)

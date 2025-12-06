@@ -17,7 +17,7 @@ class DLSNUCModel:
     # constructor for the DLS-NUC model
     def __init__(self):
         # get the device
-        self.device = GetDevice
+        self.device = GetDevice()
     
         # define the DLS-NUC network models
         mcn = sio.loadmat("models/dlsnuc/original/model1.mat", squeeze_me=False)

@@ -9,7 +9,7 @@ class EMPTYModel:
     def __init__(self):
     
         # set the device for tensor operations
-        self.device = GetDevice
+        self.device = GetDevice()
         self.fpn = None
 
     # takes noisy ir and rgb images and return fpn_estimation
