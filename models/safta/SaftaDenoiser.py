@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-import torch.nn.functional as funs
+from utility.GetDevice import GetDevice
 from torch.optim.lr_scheduler import LambdaLR
 
 # import critical components of the SAFTA
@@ -13,7 +12,7 @@ class SAFTADenoiser(nn.Module):
         super().__init__()
         
         # set the device type
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         
         # set base channel for encoders
         bc = 32

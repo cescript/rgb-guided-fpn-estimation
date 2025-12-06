@@ -1,5 +1,6 @@
 import os
 import torch
+from utility.GetDevice import GetDevice
 
 # main implementation of the algorithm
 from .multiview.MULTIVIEWNetwork import MULTIVIEWNetwork
@@ -11,7 +12,7 @@ class MULTIVIEWModel:
     # constructor for the MULTIVIEW-FPN model
     def __init__(self):
         # get rgb multiplier as float
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
 
         # define the MULTIVIEW-FPN network models
         self.multiview_model = MULTIVIEWNetwork(self.device)

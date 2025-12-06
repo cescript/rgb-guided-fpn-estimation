@@ -5,6 +5,7 @@ import torch
 from models.safta.SaftaDenoiser import SAFTADenoiser
 from models.safta.SaftaNoiseEstimator import SaftaNoiseEstimator
 from models.safta.OLSNoiseEstimator import OLSNoiseEstimator
+from utility.GetDevice import GetDevice
 
 class SAFTAModel:
     """
@@ -14,7 +15,7 @@ class SAFTAModel:
     def __init__(self, use_rgb, use_ols=False):
         
         # get rgb multiplier as float
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         self.rgb_multiplier = torch.tensor(1.0 if use_rgb else 0.0, device=self.device)
         
         # create denoiser and fpn estimator

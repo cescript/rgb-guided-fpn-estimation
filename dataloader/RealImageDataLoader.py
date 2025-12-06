@@ -3,6 +3,7 @@ import json
 import torch
 from PIL import Image
 from collections import defaultdict
+from utility.GetDevice import GetDevice
 import torchvision.transforms.functional as tfunction
 
 # assumes that images are labeled as 00000_00.png, 00000_01.png
@@ -14,7 +15,7 @@ class RealImageDataLoader:
         assert os.path.isfile(config_file), f"config file not found at {config_file}"
         
         # set device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         
         # try to read configuration file and set variables
         with open(config_file, 'r') as file:
@@ -53,7 +54,7 @@ class RealImageDataLoader:
         # dataset options
         self.aggregation_size = aggregation_size    # number of noisy image for each FPN pattern
         self.current_idx = 0                        # set the current to zero
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
 
         # print info
         print("Number of images in the TEST set is {}".format(self.image_count))

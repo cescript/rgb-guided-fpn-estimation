@@ -1,5 +1,5 @@
 import torch
-
+from utility.GetDevice import GetDevice
 
 class BESTModel:
     """
@@ -9,7 +9,7 @@ class BESTModel:
     # constructor for the BEST model
     def __init__(self):
         # set the device for tensor operations
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice
         self.fpn = None
 
     # takes noisy ir and rgb images and return fpn_estimation

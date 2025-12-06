@@ -1,5 +1,6 @@
 import torch
 import random
+from utility.GetDevice import GetDevice
 from .LoadImageDataset import LoadImageDataset
 from .LoadFPNDataset import LoadFPNDataset
 
@@ -13,7 +14,7 @@ class NoiseImageDataLoader:
         self.train_test_ratio_fpn = [0.9, 0.1]      # train and test ratio for the fpn dataset
         self.aggregation_size = aggregation_size    # number of noisy image for each FPN pattern
         self.current_idx = 0                        # set the current to zero
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         
         # set the batch size and vertical/horizontal flip
         if is_train_mode:

@@ -1,6 +1,7 @@
 import os
 import torch
 import scipy.io as sio
+from utility.GetDevice import GetDevice
 
 # import actual network
 from .dlsnuc.DLSNUCNetwork import DLSNUCNetwork
@@ -16,7 +17,7 @@ class DLSNUCModel:
     # constructor for the DLS-NUC model
     def __init__(self):
         # get the device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice
     
         # define the DLS-NUC network models
         mcn = sio.loadmat("models/dlsnuc/original/model1.mat", squeeze_me=False)
