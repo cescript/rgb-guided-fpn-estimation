@@ -125,7 +125,7 @@ class SAFTADenoiser(nn.Module):
     
     # load the state of the model from checkpoint
     def load_state(self, model_name):
-        checkpoint = torch.load(model_name)
+        checkpoint = torch.load(model_name, map_location=self.device)
         self.load_state_dict(checkpoint['model_state_dict'])
         if self.is_train_mode:
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
