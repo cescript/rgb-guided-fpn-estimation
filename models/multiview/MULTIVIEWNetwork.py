@@ -21,7 +21,7 @@ class MULTIVIEWNetwork(nn.Module):
     def forward(self, inImage):
         
         # implementation of multiview-fpn algorithm (inputs: AGGREGATED x 1 x CROP_SIZE x CROP_SIZE)
-        images = inImage.to(torch.float64)
+        images = inImage.to(torch.float32)
         input_stack = 255 * torch.squeeze(images, dim=1)
         
         # create output as zero
