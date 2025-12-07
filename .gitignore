@@ -7,4 +7,5 @@ output
 *.png
 dataloader/dataset/llvip
 dataloader/dataset/m3fd
+dataloader/dataset/msrs
 .DS_Store
