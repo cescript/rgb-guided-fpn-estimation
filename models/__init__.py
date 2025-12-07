@@ -4,6 +4,7 @@ from models.BESTModel import BESTModel
 from models.DLSNUCModel import DLSNUCModel
 from models.D1WLSModel import D1WLSModel
 from models.MULTIVIEWModel import MULTIVIEWModel
+from models.DCGANModel import DCGANModel
 
 # generate a FPN detector model with the given options
 def GenerateModel(model_name):
@@ -23,5 +24,7 @@ def GenerateModel(model_name):
         return D1WLSModel()
     elif model_name == 'MULTIVIEW':
         return MULTIVIEWModel()
+    elif model_name == 'DCGAN':
+        return DCGANModel()
     else:
         raise ValueError(f"Model {model_name} not found")
