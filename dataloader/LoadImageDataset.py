@@ -33,6 +33,7 @@ class LoadImageDataset:
             
             # add the necessary configuration options
             self.name = config["dataset_name"]
+            self.train_test_ratio  = config["train_test_ratio"]
             self.resize_after_load = config["resize_after_load"]
             self.crop_after_resize = config["crop_after_resize"]
             self.image_count = len(self.rgb_paths)
@@ -120,3 +121,6 @@ class LoadImageDataset:
             return self.crop_after_resize
         else:
             return self.resize_after_load
+
+    def GetTrainTestRatio(self):
+        return self.train_test_ratio

@@ -1,0 +1,9 @@
+{
+    "dataset_name": "MSRS",
+    "dataset_path": "dataloader/dataset/msrs",
+    "rgb_subdirectory": "rgb",
+    "irc_subdirectory": "irc",
+    "train_test_ratio": [0.0, 1.0],
+    "resize_after_load": [480, 640],
+    "crop_after_resize": [288, 288]
+}

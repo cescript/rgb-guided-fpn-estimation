@@ -3,6 +3,7 @@
     "dataset_path": "dataloader/dataset/llvip",
     "rgb_subdirectory": "rgb",
     "irc_subdirectory": "infrared",
-    "resize_after_load": [256, 320],
-    "crop_after_resize": [-1, -1]
+    "train_test_ratio": [0.0, 1.0],
+    "resize_after_load": [288, 360],
+    "crop_after_resize": [288, 288]
 }

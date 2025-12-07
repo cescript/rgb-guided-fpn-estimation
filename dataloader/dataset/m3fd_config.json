@@ -3,6 +3,7 @@
     "dataset_path": "dataloader/dataset/m3fd",
     "rgb_subdirectory": "Vis",
     "irc_subdirectory": "Ir",
+    "train_test_ratio": [0.7, 0.3],
     "resize_after_load": [288, 320],
     "crop_after_resize": [288, 288]
 }
