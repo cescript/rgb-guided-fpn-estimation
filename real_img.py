@@ -13,7 +13,7 @@ def get_test_config():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--aggregation_size', type=int, default=8)
-    parser.add_argument('--dataset', type=str, default="real_dataset")
+    parser.add_argument('--dataset', type=str, default="tendero")
     return parser.parse_args()
 
 # run test code
@@ -22,13 +22,13 @@ if __name__ == '__main__':
     opt = get_test_config()
 
     # create a visualizer
-    visualize = OutputVisualizer("output", "real_dataset", save_logs=True)
+    visualize = OutputVisualizer("output", "tendero", save_logs=True)
     
     # set the model names to be evaluated
     model_names = ["EMPTY", "SAFTA-RGB", "D1WLS", "DLSNUC", "MULTIVIEW"]
 
     # create a metric evaluator class
-    metric_evaluator = MetricEvaluator("output", "real_dataset")
+    metric_evaluator = MetricEvaluator("output", "tendero")
     
     # loop over all models and test the results
     for mid, model_name in enumerate(model_names):

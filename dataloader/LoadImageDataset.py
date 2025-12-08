@@ -16,7 +16,7 @@ class LoadImageDataset:
         self.device = device
         
         # assert on error
-        config_file = os.path.join("dataloader", "dataset", f"{dataset_config}.json")
+        config_file = os.path.join("dataloader", "configs", f"{dataset_config}.json")
         assert os.path.isfile(config_file), f"config file not found at {config_file}"
         
         # try to read configuration file and set variables

@@ -5,7 +5,8 @@ output
 *.pth
 *.zip
 *.png
-dataloader/dataset/llvip
-dataloader/dataset/m3fd
-dataloader/dataset/msrs
+dataset/llvip
+dataset/m3fd
+dataset/msrs
+dataset/tendero
 .DS_Store
