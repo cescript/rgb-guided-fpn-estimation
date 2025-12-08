@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
                 # save an example result at the end of the epoch
                 if total_images == opt.batch_size * opt.aggregation_size * len(fpn_img_loader):
-                    visualize.save_fpn_results(epoch, fpn_img[0], fpn_est[0])
+                    visualize.save_fpn_results("safta", epoch, fpn_img[0], fpn_est[0])
                     visualize.save_denoising_results(epoch, rgb_img[anchor_idx], irc_img[anchor_idx], irn_anchor[0], ire_anchor[0])
                     
             # get gradients and update network weights
