@@ -7,13 +7,18 @@ import numpy as np
 class MetricEvaluator:
     def __init__(self, path, subfolder):
         """ create a metric evaluator for IRFPN denoising """
-        self.filename = os.path.join(path, subfolder, "scores.txt")
+        output_directory = os.path.join(path, subfolder)
+        self.filename = os.path.join(output_directory, "scores.txt")
         self.metrics = "psnr, ssim, gmsd"
         self.metricFun = [
             partial(psnr, reduction='none'),
             partial(ssim, reduction='none'),
             partial(gmsd, reduction='none')
         ]
+
+        # create output directory for the scores
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
 
         # check the score file and delete if exist
         if os.path.isfile(self.filename):
