@@ -5,7 +5,7 @@ from utility.GetDevice import GetDevice
 from torch.optim.lr_scheduler import LambdaLR
 
 # import critical components of the SAFTA
-from models.safta.blocks import LowHighFrequencyLoss
+from models.safta.blocks import ResidualConvBlock, LowHighFrequencyLoss
 
 class SAFTADenoiser(nn.Module):
     def __init__(self, learning_rate=0.0001, decay_start_epoch = 100, total_epochs=100, is_train_mode=False):
@@ -18,30 +18,30 @@ class SAFTADenoiser(nn.Module):
         bc = 32
         self.pre_conv1 = nn.Sequential(nn.Conv2d( 4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
         self.pre_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.pre_conv3 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
 
         self.post_conv1 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
         self.post_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.post_conv3 = nn.Sequential(nn.Conv2d(bc,  1, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.post_conv3 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.post_conv4 = nn.Sequential(nn.Conv2d(bc,  1, kernel_size=3, stride=1, padding=1)).to(self.device)
 
         # ENCODER BLOCK: enc_conv + downsample + enc_conv + downsample ...
-        self.enc_conv1 = nn.Sequential(nn.Conv2d(bc*1, bc*1, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.enc_conv2 = nn.Sequential(nn.Conv2d(bc*1, bc*2, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.enc_conv3 = nn.Sequential(nn.Conv2d(bc*2, bc*4, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.enc_conv4 = nn.Sequential(nn.Conv2d(bc*4, bc*4, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.enc_conv5 = nn.Sequential(nn.Conv2d(bc*4, bc*4, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.enc_conv1 = ResidualConvBlock(bc * 1, bc * 1).to(self.device)
+        self.enc_conv2 = ResidualConvBlock(bc * 1, bc * 2).to(self.device)
+        self.enc_conv3 = ResidualConvBlock(bc * 2, bc * 4).to(self.device)
+        self.enc_conv4 = ResidualConvBlock(bc * 4, bc * 4).to(self.device)
+        self.enc_conv5 = ResidualConvBlock(bc * 4, bc * 4).to(self.device)
 
         # generic down/up sample layers (used many times)
         self.downsample = nn.MaxPool2d(2).to(self.device)
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True).to(self.device)
 
         # DECODER BLOCK: dec_conv + upsample + dec_conv + upsample ...
-        self.dec_conv5 = nn.Sequential(nn.Conv2d(bc*8, bc*4, kernel_size=3, padding=1), nn.ReLU()).to(self.device)
-        self.dec_conv4 = nn.Sequential(nn.Conv2d(bc*8, bc*4, kernel_size=3, padding=1), nn.ReLU()).to(self.device)
-        self.dec_conv3 = nn.Sequential(nn.Conv2d(bc*6, bc*2, kernel_size=3, padding=1), nn.ReLU()).to(self.device)
-        self.dec_conv2 = nn.Sequential(nn.Conv2d(bc*3, bc*1, kernel_size=3, padding=1), nn.ReLU()).to(self.device)
-        self.dec_conv1 = nn.Sequential(nn.Conv2d(bc*1, bc*1, kernel_size=3, padding=1), nn.ReLU()).to(self.device)
-        
+        self.dec_conv5 = ResidualConvBlock(bc * 8, bc * 4).to(self.device)
+        self.dec_conv4 = ResidualConvBlock(bc * 8, bc * 4).to(self.device)
+        self.dec_conv3 = ResidualConvBlock(bc * 6, bc * 2).to(self.device)
+        self.dec_conv2 = ResidualConvBlock(bc * 3, bc * 1).to(self.device)
+        self.dec_conv1 = ResidualConvBlock(bc * 1, bc * 1).to(self.device)
+
         # create classes that only needed in training mode
         self.is_train_mode = is_train_mode
         if self.is_train_mode:
@@ -63,18 +63,26 @@ class SAFTADenoiser(nn.Module):
             for param in self.parameters():
                 param.requires_grad = False
 
+    def normalize_input(self, net_in):
+        # net_in: [B, C, H, W]
+        mu = net_in.mean(dim=(2, 3), keepdim=True)  # [B, C, 1, 1]
+        std = net_in.std(dim=(2, 3), keepdim=True) + 1e-6
+
+        # calculate normalized input
+        return (net_in - mu) / std
+
     # forward process
     def forward(self, rgb_image, irn_image):
-        
+        # [BATCH x 1 x HEIGHT x WIDTH]
         # make an input vector using both features
         net_in = torch.cat([rgb_image, irn_image], dim=1)
-        
+
         # encoder block
-        a1 = self.pre_conv1(net_in)
+        net_in_norm = self.normalize_input(net_in)
+        a1 = self.pre_conv1(net_in_norm)
         a2 = self.pre_conv2(a1)
-        a3 = self.pre_conv3(a2)
-    
-        e1 = self.enc_conv1(a3)
+
+        e1 = self.enc_conv1(a2)
         p1 = self.downsample(e1)
         e2 = self.enc_conv2(p1)
         p2 = self.downsample(e2)
@@ -94,13 +102,19 @@ class SAFTADenoiser(nn.Module):
         d2 = self.upsample(d2)
         d1 = self.dec_conv2(torch.cat([d2, e1], dim=1))
         d0 = self.dec_conv1(d1)
-    
+
+        # RESIDUAL LEARNING
         z1 = self.post_conv1(d0)
         z2 = self.post_conv2(z1)
-        ot = self.post_conv3(z2)
+        z3 = self.post_conv3(z2)
+        rs = self.post_conv4(z3)
+
+        # RESIDUAL to IMAGE
+        clean = irn_image + rs
+        clean = torch.clamp(clean, 0.0, 1.0)
 
         # return the current estimates for the clean image
-        return ot
+        return clean
 
     # calculate the loss and do parameter update
     def optimize_parameters(self, irc_img, irc_est):
