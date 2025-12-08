@@ -5,6 +5,7 @@ import torch
 from models.safta.SaftaDenoiser import SAFTADenoiser
 from models.safta.SaftaNoiseEstimator import SaftaNoiseEstimator
 from models.safta.OLSNoiseEstimator import OLSNoiseEstimator
+from models.safta.NILNoiseEstimator import NILNoiseEstimator
 from utility.GetDevice import GetDevice
 
 class SAFTAModel:
@@ -23,11 +24,13 @@ class SAFTAModel:
         self.denoiser.load_state(os.path.join("models", "safta", "weights", "best_denoiser.pth"))
         
         # pick the fpn estimator
-        if fpn_estimator == "OLS":
+        if fpn_estimator == "NIL":
+            self.fpn_estimator = NILNoiseEstimator()
+        elif fpn_estimator == "OLS":
             self.fpn_estimator = OLSNoiseEstimator()
         elif fpn_estimator == "GRU":
             self.fpn_estimator = SaftaNoiseEstimator(is_train_mode=False).to(self.device)
-            self.fpn_estimator.load_state(os.path.join("models", "safta", "weights", "best_fpn_estimator_normalized.pth"))
+            self.fpn_estimator.load_state(os.path.join("models", "safta", "weights", "best_fpn_estimator.pth"))
         else:
             print(f"invalid fpn estimator")
             exit(1)

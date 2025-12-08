@@ -14,6 +14,8 @@ def GenerateModel(model_name):
         return SAFTAModel(use_rgb=True, fpn_estimator="GRU")
     elif model_name == 'SAFTA-RGB-OLS':
         return SAFTAModel(use_rgb=True, fpn_estimator="OLS")
+    elif model_name == 'SAFTA-RGB-NIL':
+        return SAFTAModel(use_rgb=True, fpn_estimator="NIL")
     elif model_name == 'EMPTY':
         return EMPTYModel()
     elif model_name == 'BEST':
