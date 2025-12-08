@@ -9,11 +9,11 @@ from models.DCGANModel import DCGANModel
 # generate a FPN detector model with the given options
 def GenerateModel(model_name):
     if model_name == 'SAFTA':
-        return SAFTAModel(use_rgb=False)
+        return SAFTAModel(use_rgb=False, fpn_estimator="GRU")
     elif model_name == 'SAFTA-RGB':
-        return SAFTAModel(use_rgb=True)
+        return SAFTAModel(use_rgb=True, fpn_estimator="GRU")
     elif model_name == 'SAFTA-RGB-OLS':
-        return SAFTAModel(use_rgb=True, use_ols=True)
+        return SAFTAModel(use_rgb=True, fpn_estimator="OLS")
     elif model_name == 'EMPTY':
         return EMPTYModel()
     elif model_name == 'BEST':
