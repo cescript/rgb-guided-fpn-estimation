@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     # algorithm comparison
     if opt.test_case == "comparison":
-        dataset_names = ["m3fd_config", "msrs_config", "llvip_config"]
+        dataset_names = ["m3fd_config", "msrs_config"]
         model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
         aggregation_sizes = [12]
     elif opt.test_case == "ablation":
@@ -59,11 +59,11 @@ if __name__ == '__main__':
                 # create dataset loader and fpn generator for training
                 fpn_img_loader = NoiseImageDataLoader(dataset, 1, aggregation, is_train_mode=False)
 
-                # start the evaluation of the model
-                metric_evaluator.start(model_name)
-
                 # create a model given opt.model and other options
                 model = models.GenerateModel(model_name)
+
+                # start the evaluation of the model
+                metric_evaluator.start(model_name)
 
                 # start the image loader
                 # fpn_img: B x 2 x HEIGHT x WIDTH, rgb_img: K x 3 x HEIGHT x WIDTH, irc_img: K x 1 x HEIGHT x WIDTH

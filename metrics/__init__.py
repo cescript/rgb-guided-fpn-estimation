@@ -1,5 +1,6 @@
 import torch
 import os
+import time
 from functools import partial
 from piq import psnr, ssim, gmsd
 import numpy as np
@@ -28,6 +29,7 @@ class MetricEvaluator:
     def start(self, modelName):
         self.header = modelName + "," + self.metrics
         self.scores = np.zeros((0, len(self.metricFun)))
+        self.start_time = time.perf_counter()
     
     # assumes that ref and irc has Nx1xHxW
     def evaluate(self, ref, irc):
@@ -43,13 +45,23 @@ class MetricEvaluator:
     
     # save the resulting scores array to disk
     def save_metrics(self, reduction: str):
+        # calculate avg time per image
+        elapsed = time.perf_counter() - self.start_time
+        samples = self.scores.shape[0]
+        avg_time = (elapsed / samples) * 1000 # ms
+
+        # append avgtime column to all rows
+        avg_col = np.full((samples, 1), avg_time)
+        scores_with_time = np.concatenate([self.scores, avg_col], axis=1)
+        header_with_time = self.header.append("avgtime")
+
         # open the so that we can append multiple results
         with open(self.filename, "a") as log_file:
             # print each score
             if reduction == "none":
-                np.savetxt(log_file, self.scores, fmt='%.4f', delimiter=', ', header=self.header)
+                np.savetxt(log_file, scores_with_time, fmt='%.4f', delimiter=', ', header=header_with_time)
             elif reduction == "mean":
-                np.savetxt(log_file, np.mean(self.scores, axis=0, keepdims=True), fmt='%.4f', delimiter=', ', header=self.header)
+                np.savetxt(log_file, np.mean(scores_with_time, axis=0, keepdims=True), fmt='%.4f', delimiter=', ', header=header_with_time)
             else:
                 print("unknown reduction method")
         

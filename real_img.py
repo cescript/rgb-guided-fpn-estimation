@@ -37,12 +37,12 @@ if __name__ == '__main__':
         # create a real world dataset loader
         noisy_img_loader = RealImageDataLoader(opt.dataset, opt.aggregation_size)
 
+        # create a model given opt.model and other options
+        model = models.GenerateModel(model_name)
+
         # start the evaluation of the model
         metric_evaluator.start(model_name)
 
-        # create a model given opt.model and other options
-        model = models.GenerateModel(model_name)
-        
         # start the image loader
         # irn_imgs: K x [1 x HEIGHT x WIDTH]
         # rgb_imgs: K x [3 x HEIGHT x WIDTH]
