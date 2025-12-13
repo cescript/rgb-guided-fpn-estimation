@@ -1,8 +1,0 @@
-# rgb0_irn1_fpn1,psnr, ssim, gmsd
-42.9809, 0.9951, 0.0051
-# rgb0_irn1_fpn0,psnr, ssim, gmsd
-38.5630, 0.9880, 0.0141
-# rgb1_irn1_fpn1,psnr, ssim, gmsd
-46.0784, 0.9958, 0.0053
-# rgb1_irn1_fpn0,psnr, ssim, gmsd
-41.5458, 0.9906, 0.0123
