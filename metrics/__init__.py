@@ -53,7 +53,7 @@ class MetricEvaluator:
         # append avgtime column to all rows
         avg_col = np.full((samples, 1), avg_time)
         scores_with_time = np.concatenate([self.scores, avg_col], axis=1)
-        header_with_time = self.header.append("avgtime")
+        header_with_time = self.header + "," + "avgtime"
 
         # open the so that we can append multiple results
         with open(self.filename, "a") as log_file:
