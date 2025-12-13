@@ -5,7 +5,7 @@ from utility.GetDevice import GetDevice
 from torch.optim.lr_scheduler import LambdaLR
 
 # import critical components of the SAFTA
-from models.safta.blocks import ResidualConvBlock, LowHighFrequencyLoss
+from models.safta.blocks import LowHighFrequencyLoss
 
 class SAFTADenoiser(nn.Module):
     def __init__(self, learning_rate=0.0001, decay_start_epoch = 100, total_epochs=100, is_train_mode=False):
@@ -23,7 +23,7 @@ class SAFTADenoiser(nn.Module):
         # simple residual computation blocks
         self.res_conv1 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
         self.res_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.res_conv3 = nn.Sequential(nn.Conv2d(bc,  1, kernel_size=3, stride=1, padding=1)).to(self.device)
+        self.res_conv3 = nn.Sequential(nn.Conv2d(bc, 1, kernel_size=3, stride=1, padding=1)).to(self.device)
 
         # make special path for stripe noise
         self.stripe_conv1 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=(1, 9), padding=(0, 4)), nn.ReLU()).to(self.device)
@@ -31,22 +31,22 @@ class SAFTADenoiser(nn.Module):
         self.stripe_conv3 = nn.Sequential(nn.Conv2d(bc, 1, kernel_size=1)).to(self.device)
 
         # ENCODER BLOCK: enc_conv + downsample + enc_conv + downsample ...
-        self.enc_conv1 = ResidualConvBlock(bc * 1, bc * 1).to(self.device)
-        self.enc_conv2 = ResidualConvBlock(bc * 1, bc * 1).to(self.device)
-        self.enc_conv3 = ResidualConvBlock(bc * 1, bc * 2).to(self.device)
-        self.enc_conv4 = ResidualConvBlock(bc * 2, bc * 2).to(self.device)
-        self.enc_conv5 = ResidualConvBlock(bc * 2, bc * 3).to(self.device)
+        self.enc_conv1 = nn.Sequential(nn.Conv2d(bc * 1, bc * 1, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.enc_conv2 = nn.Sequential(nn.Conv2d(bc * 1, bc * 1, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.enc_conv3 = nn.Sequential(nn.Conv2d(bc * 1, bc * 2, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.enc_conv4 = nn.Sequential(nn.Conv2d(bc * 2, bc * 2, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.enc_conv5 = nn.Sequential(nn.Conv2d(bc * 2, bc * 3, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
 
         # generic down/up sample layers (used many times)
         self.downsample = nn.MaxPool2d(2).to(self.device)
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True).to(self.device)
 
         # DECODER BLOCK: dec_conv + upsample + dec_conv + upsample ...
-        self.dec_conv5 = ResidualConvBlock(bc * 5, bc * 3).to(self.device) # [e5+e4]
-        self.dec_conv4 = ResidualConvBlock(bc * 5, bc * 3).to(self.device) # [p+e3]
-        self.dec_conv3 = ResidualConvBlock(bc * 4, bc * 2).to(self.device) # [p+e2]
-        self.dec_conv2 = ResidualConvBlock(bc * 3, bc * 2).to(self.device) # [p+e1]
-        self.dec_conv1 = ResidualConvBlock(bc * 2, bc * 1).to(self.device) # [p]
+        self.dec_conv5 = nn.Sequential(nn.Conv2d(bc * 5, bc * 3, kernel_size=3, padding=1), nn.ReLU()).to(self.device) # [e5+e4]
+        self.dec_conv4 = nn.Sequential(nn.Conv2d(bc * 5, bc * 3, kernel_size=3, padding=1), nn.ReLU()).to(self.device) # [p+e3]
+        self.dec_conv3 = nn.Sequential(nn.Conv2d(bc * 4, bc * 2, kernel_size=3, padding=1), nn.ReLU()).to(self.device) # [p+e2]
+        self.dec_conv2 = nn.Sequential(nn.Conv2d(bc * 3, bc * 2, kernel_size=3, padding=1), nn.ReLU()).to(self.device) # [p+e1]
+        self.dec_conv1 = nn.Sequential(nn.Conv2d(bc * 2, bc * 1, kernel_size=3, padding=1), nn.ReLU()).to(self.device) # [p]
 
         # create classes that only needed in training mode
         self.is_train_mode = is_train_mode
