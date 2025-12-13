@@ -34,16 +34,17 @@ if __name__ == '__main__':
     safta_model = SAFTADenoiser(opt.learning_rate, opt.n_epochs_decay, total_epochs, is_train_mode=True)
     
     # create a visualizer
-    visualize = OutputVisualizer("output", "denoiser", save_logs=True)
+    top_folder = os.path.join("output", "train")
+    visualize = OutputVisualizer(top_folder, "denoiser", save_logs=True)
     
     # load the pretrained weights if exist
-    weights_directory = os.path.join("output", "denoiser")
+    weights_directory = os.path.join(top_folder, "denoiser")
     if opt.epoch_count > 1:
         print(f"Loading previously trained model")
         safta_model.load_state(os.path.join(weights_directory, f"denoiser_{opt.epoch_count}.pth"))
 
     # create output directory
-    os.makedirs("output", exist_ok=True)
+    os.makedirs(top_folder, exist_ok=True)
 
     # outer loop for different epochs
     for epoch in range(opt.epoch_count, total_epochs + 1):
