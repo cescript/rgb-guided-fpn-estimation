@@ -25,7 +25,7 @@ if __name__ == '__main__':
     visualize = OutputVisualizer("output", "tendero", save_logs=True)
     
     # set the model names to be evaluated
-    model_names = ["EMPTY", "SAFTA-RGB", "D1WLS", "DLSNUC", "MULTIVIEW"]
+    model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
 
     # create a metric evaluator class
     metric_evaluator = MetricEvaluator("output", "tendero")
