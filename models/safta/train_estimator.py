@@ -29,7 +29,7 @@ if __name__ == '__main__':
     opt = get_training_config()
 
     # create dataset loader and fpn generator for training
-    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, is_train_mode=True)
+    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, "fpn", is_train_mode=True)
 
     # create model and load parameters if exist
     total_epochs = opt.n_epochs_decay + opt.n_epochs

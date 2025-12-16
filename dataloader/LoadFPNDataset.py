@@ -7,7 +7,7 @@ import torchvision.transforms.functional as tfunction
 # custom FPN dataset
 class LoadFPNDataset:
 
-    def __init__(self, image_size, noise_count, device):
+    def __init__(self, image_size, noise_count, fpn_type, device):
     
         # get the copy of the options
         self.image_size = image_size
@@ -21,9 +21,19 @@ class LoadFPNDataset:
         # narcissism parameters
         self.n_sigma = [0.1, 0.2]
         self.n_square = 32
-        self.n_probability = 1.0
         self.n_gain = [-0.1, 0.1]
-        
+
+        # pick narcissism probability
+        if fpn_type == "fpn":
+            self.n_probability = 1
+        elif fpn_type == "hfn":
+            self.n_probability = 0
+        elif fpn_type == "mixed":
+            self.n_probability = 0.5
+        else:
+            print(f"invalid fpn type, use fpn/hfn/mixed")
+            exit(1)
+
         # create noise patterns
         self.noise_patterns = []
         for idx in range(self.noise_count):

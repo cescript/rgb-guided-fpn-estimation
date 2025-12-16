@@ -5,7 +5,7 @@ from .LoadImageDataset import LoadImageDataset
 from .LoadFPNDataset import LoadFPNDataset
 
 class NoiseImageDataLoader:
-    def __init__(self, dataset_config: str, batch_size:int, aggregation_size: int, is_train_mode: bool):
+    def __init__(self, dataset_config: str, batch_size:int, aggregation_size: int, fpn_type: str, is_train_mode: bool):
     
         # dataset options
         self.noise_count = 10000                    # total noise count
@@ -30,7 +30,7 @@ class NoiseImageDataLoader:
         
         # dataset should have __init__, __get_item__ and __len__ methods
         self.image_dataset = LoadImageDataset(dataset_config, self.vh_flip, self.crop_random, self.device)
-        self.fpn_dataset   = LoadFPNDataset(self.image_dataset.GetImageSize(), self.noise_count, self.device)
+        self.fpn_dataset   = LoadFPNDataset(self.image_dataset.GetImageSize(), self.noise_count, fpn_type, self.device)
 
         # get the split ratio from config
         self.train_test_ratio_img = self.image_dataset.GetTrainTestRatio()
