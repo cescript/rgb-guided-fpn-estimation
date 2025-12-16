@@ -15,7 +15,7 @@ class SAFTADenoiser(nn.Module):
         self.device = GetDevice()
         
         # set base channel for encoders
-        bc = 32
+        bc = 24
         self.pre_conv1 = nn.Sequential(nn.Conv2d( 4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
         self.pre_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
         self.pre_conv3 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
@@ -75,7 +75,7 @@ class SAFTADenoiser(nn.Module):
         std = net_in.std(dim=(2, 3), keepdim=True) + 1e-6
 
         # calculate normalized input
-        return (net_in - mu) / std, std
+        return (net_in - mu) / std, std[:, 3:4, :, :]
 
     # forward process
     def forward(self, rgb_image, irn_image):
@@ -84,7 +84,7 @@ class SAFTADenoiser(nn.Module):
         net_in = torch.cat([rgb_image, irn_image], dim=1)
 
         # INPUT BLOCK
-        net_in_norm, std = self.normalize_input(net_in)
+        net_in_norm, std_ir = self.normalize_input(net_in)
         a1 = self.pre_conv1(net_in_norm)
         a2 = self.pre_conv2(a1)
         a3 = self.pre_conv2(a2)
@@ -126,7 +126,8 @@ class SAFTADenoiser(nn.Module):
         rs = self.res_conv3(z2)
 
         # RESIDUAL to IMAGE
-        clean = irn_image + (rs + ss) * std[:, 3:4, :, :]
+        residual = 0.2 * torch.tanh((rs + ss) * std_ir)
+        clean = irn_image + residual
 
         # clamp result in test mode
         if not self.training:
