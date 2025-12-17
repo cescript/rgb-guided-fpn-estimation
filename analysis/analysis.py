@@ -63,10 +63,10 @@ def write_score_table_txt(filename, header, rows):
         f.write(",".join(header) + "\n")
         # rows are the scores
         for key in rows.keys():
-            if key == "psnr":
-                row = [key] + [f"{v:.2f}" for v in rows[key]]
-            else:
+            if key == "ssim" or key == "gmsd":
                 row = [key] + [f"{v:.3f}" for v in rows[key]]
+            else:
+                row = [key] + [f"{v:.2f}" for v in rows[key]]
             f.write(",".join(row) + "\n")
 
 # save figures for selected metric
