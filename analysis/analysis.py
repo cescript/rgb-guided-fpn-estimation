@@ -36,62 +36,73 @@ def read_scores(logfile, append_k=0):
 
     return algorithm_names, scores
 
-def write_score_table_txt(filename, algorithm_names, scores, metrics=("psnr", "ssim", "gmsd")):
+# return tble for comparison
+def get_metric_table(logpath):
+    header = ["metric"]
+    rows = {}
+    if os.path.isfile(logpath):
+        alg_names, scores = read_scores(logpath)
+        header.extend(alg_names)
+        for score in scores.keys():
+            rows.setdefault(score, []).extend(scores[score])
+    return header, rows
+
+# return table for k effect
+def get_k_table(logpaths):
+    header  = ["algorithm"]
+    rows = {}
+    for logpath in logpaths:
+        if os.path.isfile(logpath):
+            alg_names, alg_scores = read_scores(logpath)
+            for alg_name in alg_names:
+                rows.setdefault(alg_name, []).extend(alg_scores["psnr"])
+            header.append(f"K={k}")
+    return header, rows
+
+def write_score_table_txt(filename, header, rows):
     with open(filename, "w") as f:
         # header of the table
-        f.write(",".join(["metric"] + algorithm_names) + "\n")
+        f.write(",".join(header) + "\n")
         # rows are the scores
-        for m in metrics:
-            values = scores[m]
-            row = [m] + [f"{v:.3f}" for v in values]
+        for key in rows.keys():
+            row = [key] + [f"{v:.3f}" for v in rows[key]]
             f.write(",".join(row) + "\n")
 
 # save figures for selected metric
-def save_figures(algorithm_names, scores, selected_metric, title, rotation_angle=30):
+def save_figures(figure_path, headers, rows, selected_key, title, rotation_angle=30):
     # plot each metric
     fig, ax = plt.subplots(figsize=(8, 4))
-    bars = ax.bar(algorithm_names, scores[selected_metric], color='#7fcdbb')
+    bars = ax.bar(headers[1:], rows[selected_key], color='#7fcdbb')
     ax.set_title(title)
-    ax.set_ylabel(f'{selected_metric.upper()}')
-    ax.set_xticks(range(len(algorithm_names)))
-    ax.set_xticklabels(algorithm_names, rotation=rotation_angle, ha='center', fontfamily='monospace')
+    ax.set_ylabel(f'{selected_key.upper()}')
+    ax.set_xticks(range(len(headers[1:])))
+    ax.set_xticklabels(headers[1:], rotation=rotation_angle, ha='center', fontfamily='monospace')
     
     # Add value labels on top of bars
-    for bar, value in zip(bars, scores[selected_metric]):
+    for bar, value in zip(bars, rows[selected_key]):
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width() / 2, height * 0.9, f"{value:.2f}",
                 ha='center', va='top', fontsize=12, color='#f7fcb9')
     
     fig.tight_layout()
-    figure_path = os.path.join("output", "figures")
-    filename = f"{title.replace(' ', '_').lower()}_{selected_metric}"
+    filename = f"{title.replace(' ', '_').lower()}_{selected_key}"
+    fig.savefig(os.path.join(figure_path, f"{filename}.png"), dpi=300)
+    plt.close(fig)
 
+def write_scores_and_figures(headers, rows, title, rotation_angle=30):
     # create output directory for the images and logs
+    figure_path = os.path.join("output", "figures")
     if not os.path.exists(figure_path):
         os.makedirs(figure_path)
 
-    # dump image and log
-    write_score_table_txt(os.path.join(figure_path, f"{filename}.txt"), algorithm_names, scores)
-    fig.savefig(os.path.join(figure_path, f"{filename}.png"), dpi=300)
+    # save figures for each key
+    for key in rows:
+        save_figures(figure_path, headers, rows, key, title, rotation_angle)
 
-def print_formatted(algorithm_names_and_k, scores, selected_metric, title):
-    # split algorithm names and k's
-    grouped = defaultdict(list)
-    for idx, item in enumerate(algorithm_names_and_k):
-        # get algorithm name and k
-        aname, k = item.rsplit("-", 1)
-        grouped[aname].append({"k": int(k), "score": scores[selected_metric][idx]})
-    
-    # now print thr results
-    alg_names = sorted(grouped.keys())
-    print(f"{title}")
-    for aname in alg_names:
-        print(f"{aname}: ", end=' & ')
-        sorted_data = sorted(grouped[aname], key=lambda d: d["k"])
-        for item in sorted_data:
-            print(f"{item['score']: .3f}", end=' & ')
-        print("")
-    
+    # save table
+    filename = os.path.join(figure_path, f"{title.replace(' ', '_').lower()}.txt")
+    write_score_table_txt(filename, headers, rows)
+
 # draw figures for all tests
 if __name__ == '__main__':
 
@@ -99,46 +110,45 @@ if __name__ == '__main__':
     # get the results for FPN
     title = "Model Performance for FPN on M3FD"
     logpath = "output/comparison/m3fd_config_K_12_fpn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
     # get the results for HFN
     title = "Model Performance for HFN on M3FD"
     logpath = "output/comparison/m3fd_config_K_12_hfn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
     ################# DO COMPARISON ANALYSIS ON MSRS #################
     # get the results for FPN
     title = "Model Performance for FPN on MSRS"
     logpath = "output/comparison/msrs_config_K_12_fpn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
     # get the results for HFN
     title = "Model Performance for HFN  on MSRS"
     logpath = "output/comparison/msrs_config_K_12_hfn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
     ################# DO ABLATION ANALYSIS #################
     # get the results for FPN
     title = "Ablation Performance on FPN"
     logpath = "output/ablation/m3fd_config_K_12_fpn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title, 0)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
     # get the results for HFN
     title = "Ablation Performance on HFN"
     logpath = "output/ablation/m3fd_config_K_12_hfn/scores.txt"
-    if os.path.isfile(logpath):
-        algorithm_names, scores = read_scores(logpath)
-        save_figures(algorithm_names, scores, "psnr", title, 0)
+    header, rows = get_metric_table(logpath)
+    write_scores_and_figures(header, rows, title, 0)
 
-    
-    
+    ################# DO K EFFECT ANALYSIS #################
+    title = "Effect of K on FPN"
+    logpaths = []
+    for k in range(2, 16, 2):
+        logpaths.append(f"output/k_effect/m3fd_config_K_{k}_fpn/scores.txt")
+    header, rows = get_k_table(logpaths)
+    write_scores_and_figures(header, rows, title, 0)
