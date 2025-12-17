@@ -1,0 +1,6 @@
+# SAFTA-RGB,psnr, ssim, gmsd,avgtime
+50.7694, 0.9987, 0.0014, 46.6482
+# SAFTA-RGB-OLS,psnr, ssim, gmsd,avgtime
+50.3389, 0.9986, 0.0014, 43.1888
+# MULTIVIEW,psnr, ssim, gmsd,avgtime
+44.6916, 0.9930, 0.0082, 142.6286
