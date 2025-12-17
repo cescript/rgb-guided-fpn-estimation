@@ -59,14 +59,14 @@ def crop_and_save(img, zoom_img, crop_zone, output_path, model_name, img_id):
 # run training code
 if __name__ == '__main__':
     # set the output path
-    image_path = os.path.join("output", "output_visualizations", "visuals")
-    output_path = os.path.join("output", "output_visualizations", "highlights")
-    model_names = ["EMPTY", "MULTIVIEW", "DLSNUC", "SAFTA", "SAFTA-RGB", "D1WLS"]
+    image_path = os.path.join("output", "comparison", "m3fd_config_K_12_hfn", "visuals")
+    output_path = os.path.join("output", "highlights")
+    model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
     
     # select highlight images
     highlights = []
-    highlights.append({"img_idx": 24, "crop_zone": [25, 125, 118, 228]})
-    highlights.append({"img_idx": 45, "crop_zone": [80, 140, 60, 120]})
+    highlights.append({"img_idx": 0, "crop_zone": [25, 125, 118, 228]})
+    highlights.append({"img_idx": 45, "crop_zone": [140, 200, 180, 240]})
     
 
     # highlight color and thickness
