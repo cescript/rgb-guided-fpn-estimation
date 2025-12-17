@@ -49,15 +49,13 @@ def get_metric_table(logpath):
 
 # return table for k effect
 def get_k_table(logpaths):
-    header  = ["algorithm"]
     rows = {}
     for logpath in logpaths:
         if os.path.isfile(logpath):
             alg_names, alg_scores = read_scores(logpath)
-            for alg_name in alg_names:
-                rows.setdefault(alg_name, []).extend(alg_scores["psnr"])
-            header.append(f"K={k}")
-    return header, rows
+            for idx, alg_name in enumerate(alg_names):
+                rows.setdefault(alg_name, []).append(alg_scores["psnr"][idx])
+    return rows
 
 def write_score_table_txt(filename, header, rows):
     with open(filename, "w") as f:
@@ -148,7 +146,19 @@ if __name__ == '__main__':
     ################# DO K EFFECT ANALYSIS #################
     title = "Effect of K on FPN"
     logpaths = []
-    for k in range(2, 16, 2):
+    header = ["algorithm"]
+    for k in range(2, 18, 2):
         logpaths.append(f"output/k_effect/m3fd_config_K_{k}_fpn/scores.txt")
-    header, rows = get_k_table(logpaths)
+        header.append(f"K={k}")
+    rows = get_k_table(logpaths)
+    write_scores_and_figures(header, rows, title, 0)
+
+    # effect on hfn
+    title = "Effect of K on HFN"
+    logpaths = []
+    header = ["algorithm"]
+    for k in range(2, 18, 2):
+        logpaths.append(f"output/k_effect/m3fd_config_K_{k}_hfn/scores.txt")
+        header.append(f"K={k}")
+    rows = get_k_table(logpaths)
     write_scores_and_figures(header, rows, title, 0)
