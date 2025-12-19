@@ -6,6 +6,7 @@ import argparse
 from utility.FPNUtility import fpn_insert
 
 # import required classes
+from models.safta.SaftaDenoiser import SAFTADenoiser
 from models.safta.SaftaNoiseEstimator import SaftaNoiseEstimator
 from utility.OutputVisualizer import OutputVisualizer
 from dataloader.NoiseImageDataLoader import NoiseImageDataLoader
@@ -14,11 +15,12 @@ from dataloader.NoiseImageDataLoader import NoiseImageDataLoader
 def get_training_config():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=8)
-    parser.add_argument('--aggregation_size', type=int, default=8)
+    parser.add_argument('--aggregation_size', type=int, default=12)
     parser.add_argument('--epoch_count', type=int, default=1)
-    parser.add_argument('--n_epochs', type=int, default=40)
+    parser.add_argument('--n_epochs', type=int, default=80)
     parser.add_argument('--n_epochs_decay', type=int, default=20)
     parser.add_argument('--learning_rate', type=float, default=1e-4)
+    parser.add_argument('--finetune', type=int, default=60)
     parser.add_argument('--dataset', type=str, default="m3fd_config")
     return parser.parse_args()
 
@@ -35,6 +37,10 @@ if __name__ == '__main__':
     total_epochs = opt.n_epochs_decay + opt.n_epochs
     safta_noise_estimator = SaftaNoiseEstimator(opt.learning_rate, opt.n_epochs_decay, total_epochs, is_train_mode=True)
 
+    if opt.finetune > 0:
+        safta_denoiser_model = SAFTADenoiser(is_train_mode=False)
+        safta_denoiser_model.load_state(os.path.join("models", "safta", "weights", "best_denoiser.pth"))
+
     # create a visualizer
     top_folder = os.path.join("output", "train")
     visualize = OutputVisualizer(top_folder, "fpn_estimator", save_logs=True)
@@ -43,7 +49,7 @@ if __name__ == '__main__':
     weights_directory = os.path.join(top_folder, "fpn_estimator")
     if opt.epoch_count > 1:
         print(f"loading previously trained model")
-        safta_noise_estimator.load_state(os.path.join(weights_directory, f"epoch_{opt.epoch_count}.pth"))
+        safta_noise_estimator.load_state(os.path.join(weights_directory, f"fpn_estimator_{opt.epoch_count}.pth"))
 
     # create output directory
     os.makedirs(top_folder, exist_ok=True)
@@ -72,7 +78,10 @@ if __name__ == '__main__':
                 rgb_img_input = rgb_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
                 
                 # predict the IRC image
-                ire_image = irc_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
+                if opt.finetune > epoch:
+                    ire_image = irc_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
+                else:
+                    ire_image = safta_denoiser_model.forward(rgb_img_input, irn_img)
 
                 # iterate over the kth image and get fpn and irc estimate
                 fpn_est = safta_noise_estimator.forward(ire_image, irn_img)
