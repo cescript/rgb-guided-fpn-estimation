@@ -39,7 +39,7 @@ class LoadFPNDataset:
         for idx in range(self.noise_count):
             self.noise_patterns.append(self.GenerateNoise())
 
-        print(f"FPN noise dataset loaded successfully with {self.noise_count} unique fpn")
+        print(f"FPN noise dataset loaded successfully with {self.noise_count} unique {fpn_type}")
         
     def __getitem__(self, index):
         # sample noise patterns from dataset
