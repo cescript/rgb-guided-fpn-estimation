@@ -17,10 +17,10 @@ def get_training_config():
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--aggregation_size', type=int, default=12)
     parser.add_argument('--epoch_count', type=int, default=1)
-    parser.add_argument('--n_epochs', type=int, default=80)
-    parser.add_argument('--n_epochs_decay', type=int, default=20)
+    parser.add_argument('--n_epochs', type=int, default=60)
+    parser.add_argument('--n_epochs_decay', type=int, default=0)
     parser.add_argument('--learning_rate', type=float, default=1e-4)
-    parser.add_argument('--finetune', type=int, default=60)
+    parser.add_argument('--finetune', type=int, default=0)
     parser.add_argument('--dataset', type=str, default="m3fd_config")
     return parser.parse_args()
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     opt = get_training_config()
 
     # create dataset loader and fpn generator for training
-    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, "fpn", is_train_mode=True)
+    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, "mixed", is_train_mode=True)
 
     # create model and load parameters if exist
     total_epochs = opt.n_epochs_decay + opt.n_epochs
@@ -78,10 +78,10 @@ if __name__ == '__main__':
                 rgb_img_input = rgb_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
                 
                 # predict the IRC image
-                if opt.finetune > epoch:
-                    ire_image = irc_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
-                else:
+                if (opt.finetune > 0) and (opt.finetune < epoch):
                     ire_image = safta_denoiser_model.forward(rgb_img_input, irn_img)
+                else:
+                    ire_image = irc_img[idx].unsqueeze(0).repeat(irn_img.shape[0], 1, 1, 1)
 
                 # iterate over the kth image and get fpn and irc estimate
                 fpn_est = safta_noise_estimator.forward(ire_image, irn_img)
