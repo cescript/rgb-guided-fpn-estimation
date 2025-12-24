@@ -4,9 +4,10 @@ from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
 
 # load image, fpn and other parts
-def load_image(img_path, model_name, image_idx):
+def load_image(dataset, model_name, image_idx):
+    image_path = os.path.join("output", "comparison", dataset, "visuals")
     # load the result image
-    imgpx = Image.open(os.path.join(img_path, f"img_{model_name}_{image_idx}.png"))
+    imgpx = Image.open(os.path.join(image_path, f"img_{model_name}_{image_idx}.png"))
     imgpx = np.array(imgpx)
     
     # in each image we have 4 images (RGB, IRC, IRN, IRE)
@@ -59,15 +60,14 @@ def crop_and_save(img, zoom_img, crop_zone, output_path, model_name, img_id):
 # run training code
 if __name__ == '__main__':
     # set the output path
-    image_path = os.path.join("output", "comparison", "m3fd_config_K_12_hfn", "visuals")
     output_path = os.path.join("output", "highlights")
     model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
     
     # select highlight images
     highlights = []
-    highlights.append({"img_idx": 0, "crop_zone": [25, 125, 118, 228]})
-    highlights.append({"img_idx": 45, "crop_zone": [140, 200, 180, 240]})
-    
+    highlights.append({"dataset": "m3fd_config_K_12_hfn", "img_idx": 0, "crop_zone": [25, 125, 118, 228]})
+    highlights.append({"dataset": "m3fd_config_K_12_hfn", "img_idx": 45, "crop_zone": [140, 200, 180, 240]})
+    highlights.append({"dataset": "msrs_config_K_12_hfn", "img_idx": 15, "crop_zone": [80, 200, 120, 240]})
 
     # highlight color and thickness
     color = [255, 0, 0]
@@ -82,7 +82,7 @@ if __name__ == '__main__':
         # get all highlight zones
         for image_index, highlight in enumerate(highlights):
             # get the image
-            rgb, irc, irn, ire = load_image(image_path, model_name, highlight["img_idx"])
+            rgb, irc, irn, ire = load_image(highlight["dataset"], model_name, highlight["img_idx"])
             
             # crop and save from IRE
             diff = irc.astype(float) - ire.astype(float)
