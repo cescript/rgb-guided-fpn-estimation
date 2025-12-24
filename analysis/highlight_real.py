@@ -39,9 +39,9 @@ def crop_and_save(img, zoom_img, crop_zone, output_path, model_name, img_id):
 # run training code
 if __name__ == '__main__':
     # set the output path
-    image_path = os.path.join("output", "real_dataset", "visuals")
-    output_path = os.path.join("output", "real_dataset", "highlights")
-    model_names = ["EMPTY", "MULTIVIEW", "DLSNUC", "SAFTA-RGB", "D1WLS"]
+    image_path = os.path.join("output", "tendero", "visuals")
+    output_path = os.path.join("output", "real_highlights")
+    model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
     
     # select highlight images
     highlights = []
