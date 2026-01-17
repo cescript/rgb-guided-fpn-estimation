@@ -18,7 +18,9 @@ def read_scores(logfile, append_k=0):
         name = lines[i][1:].split(',')[0].strip()
         # make SAFTA, SAFTA-RGB conversion
         if name == "SAFTA":
-            name = "SAFTA-NONE"
+            name = "SAFTA-NIL"
+        if name == "EMPTY":
+            name = "NOISY"
 
         # append K into algorithm name
         if append_k > 0:
