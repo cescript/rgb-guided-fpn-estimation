@@ -152,7 +152,7 @@ if __name__ == '__main__':
     title = "Effect of K on FPN"
     logpaths = []
     header = ["algorithm"]
-    for k in range(2, 18, 2):
+    for k in range(2, 22, 2):
         logpaths.append(f"output/k_effect/m3fd_config_K_{k}_fpn/scores.txt")
         header.append(f"K={k}")
     rows = get_k_table(logpaths)
@@ -162,7 +162,7 @@ if __name__ == '__main__':
     title = "Effect of K on HFN"
     logpaths = []
     header = ["algorithm"]
-    for k in range(2, 18, 2):
+    for k in range(2, 22, 2):
         logpaths.append(f"output/k_effect/m3fd_config_K_{k}_hfn/scores.txt")
         header.append(f"K={k}")
     rows = get_k_table(logpaths)

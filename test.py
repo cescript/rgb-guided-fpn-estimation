@@ -39,7 +39,7 @@ if __name__ == '__main__':
         # for K analysis
         dataset_names = ["m3fd_config"]
         model_names = ["SAFTA-RGB", "SAFTA-RGB-OLS", "MULTIVIEW"]
-        aggregation_sizes = [2, 4, 6, 8, 10, 12, 14, 16]
+        aggregation_sizes = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
         fpn_types = ["fpn", "hfn"]
     else:
         print(f"invalid test case: {opt.test_case}, choose on of comparison/ablation/k_effect")
