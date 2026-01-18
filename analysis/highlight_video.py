@@ -123,10 +123,17 @@ if __name__ == '__main__':
 
     # select highlight images
     highlights = []
-    video_name = "davis_cas_2"
-    highlights.append({"dataset": "butiv", "img_idx": 0, "crop_zone": [216, 296, 270, 370]})
-    highlights.append({"dataset": "butiv", "img_idx": 50, "crop_zone": [216, 296, 270, 370]})
-    highlights.append({"dataset": "butiv", "img_idx": 100, "crop_zone": [216, 296, 270, 370]})
+    dataset = "butiv"
+    video_name = "davis_cbs_1"
+    highlights.append({"dataset": dataset, "img_idx": 0, "crop_zone": [216, 296, 270, 370]})
+    highlights.append({"dataset": dataset, "img_idx": 40, "crop_zone": [216, 296, 270, 370]})
+    highlights.append({"dataset": dataset, "img_idx": 80, "crop_zone": [216, 296, 270, 370]})
+
+    # video_name = "atrium_aorange"
+    # highlights.append({"dataset": dataset, "img_idx": 0, "crop_zone": [116, 196, 216, 296]})
+    # highlights.append({"dataset": dataset, "img_idx": 40, "crop_zone": [116, 196, 216, 296]})
+    # highlights.append({"dataset": dataset, "img_idx": 80, "crop_zone": [116, 196, 216, 296]})
+    # highlights.append({"dataset": dataset, "img_idx": 120, "crop_zone": [116, 196, 216, 296]})
 
     # highlight color and thickness
     color = [255, 0, 0]
