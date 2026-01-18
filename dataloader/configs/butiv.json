@@ -1,0 +1,5 @@
+{
+    "dataset_name": "BUTIV",
+    "dataset_path": "../dataset/butiv",
+    "subsets": ["davis", "atrium"]
+}
