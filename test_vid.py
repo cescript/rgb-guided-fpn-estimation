@@ -15,6 +15,7 @@ def get_test_config():
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--aggregation_size', type=int, default=12)
     parser.add_argument('--dataset', type=str, default="butiv")
+    parser.add_argument('--keep_fpn', type=int, default=1)
     return parser.parse_args()
 
 
@@ -24,7 +25,7 @@ if __name__ == '__main__':
     opt = get_test_config()
 
     # create a visualizer
-    visualize = OutputVisualizer("output", opt.dataset, save_logs=True)
+    visualize = OutputVisualizer("output", f"{opt.dataset}_{opt.keep_fpn}", save_logs=True)
 
     # set the model names to be evaluated
     model_names = ["SAFTA-RGB"]
@@ -44,7 +45,8 @@ if __name__ == '__main__':
         # rgb_imgs: K x [3 x HEIGHT x WIDTH]
         for rgb_imgs, irn_imgs, video_name, frame_counter in noisy_img_loader:
             # fpn_imgs: K x [2 x HEIGHT x WIDTH]
-            fpn_imgs = model.forward(irn_imgs, rgb_imgs)
+            if frame_counter % opt.keep_fpn == 0:
+                fpn_imgs = model.forward(irn_imgs, rgb_imgs)
 
             # ire_imgs: K x [1 x HEIGHT x WIDTH]
             ire_imgs = [fpn_remove(irn_imgs[idx], fpn_imgs[idx].unsqueeze(0)).squeeze(0) for idx in range(len(fpn_imgs))]
