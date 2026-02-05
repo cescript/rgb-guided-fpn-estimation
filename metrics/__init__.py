@@ -2,20 +2,29 @@ import torch
 import os
 import time
 from functools import partial
-from piq import psnr, ssim, gmsd
+from piq import psnr, ssim, gmsd, brisque, CLIPIQA
 import numpy as np
 
 class MetricEvaluator:
-    def __init__(self, path, subfolder):
+    def __init__(self, path, subfolder, reference=True):
         """ create a metric evaluator for IRFPN denoising """
         output_directory = os.path.join(path, subfolder)
         self.filename = os.path.join(output_directory, "scores.txt")
-        self.metrics = "psnr, ssim, gmsd"
-        self.metricFun = [
-            partial(psnr, reduction='none'),
-            partial(ssim, reduction='none'),
-            partial(gmsd, reduction='none')
-        ]
+
+        if reference is True:
+            self.metrics = "psnr, ssim, gmsd"
+            self.metricFun = [
+                partial(psnr, reduction='none'),
+                partial(ssim, reduction='none'),
+                partial(gmsd, reduction='none')
+            ]
+        else:
+            self.metrics = "brisque, clip_iqa"
+            clip_iqa = CLIPIQA()
+            self.metricFun = [
+                partial(brisque, reduction='none'),
+                partial(clip_iqa)
+            ]
 
         # create output directory for the scores
         if not os.path.exists(output_directory):
@@ -36,13 +45,20 @@ class MetricEvaluator:
         """" calculate the statistics of each element """
         # get the scores
         mcount = len(self.metricFun)
-        score = np.zeros((ref.shape[0], mcount))
-        for m in range(mcount):
-            score[:, m] = self.metricFun[m](ref.cpu(), irc.cpu())
+        score = np.zeros((irc.shape[0], mcount))
+
+        # decide which method to use and analyze result
+        if ref is not None:
+            for m in range(mcount):
+                score[:, m] = self.metricFun[m](ref.cpu(), irc.cpu())
+        else:
+            for m in range(mcount):
+                val = self.metricFun[m](irc.cpu())
+                score[:, m] = val.view(val.shape[0])
         
         # append the array
         self.scores = np.append(self.scores, score, axis=0)
-    
+
     # save the resulting scores array to disk
     def save_metrics(self, reduction: str):
         # calculate avg time per image
