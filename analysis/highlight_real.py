@@ -39,16 +39,18 @@ def crop_and_save(img, zoom_img, crop_zone, output_path, model_name, img_id):
 # run training code
 if __name__ == '__main__':
     # set the output path
-    image_path = os.path.join("output", "tendero", "visuals")
+    image_path = os.path.join("output", "butiv_200", "visuals")
     output_path = os.path.join("output", "real_highlights")
     model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
     
     # select highlight images
     highlights = []
-    highlights.append({"img_idx": 3, "crop_zone": [35, 108, 98, 198]})
-    highlights.append({"img_idx": 4, "crop_zone": [50, 123, 138, 238]})
-    highlights.append({"img_idx": 12, "crop_zone": [70, 143, 120, 220]})
-    highlights.append({"img_idx": 6, "crop_zone": [60, 133, 70, 170]})
+    highlights.append({"img_idx": 120, "crop_zone": [8, 120, 167, 317]})
+    highlights.append({"img_idx": 220, "crop_zone": [98, 210, 187, 337]})
+    highlights.append({"img_idx": 500, "crop_zone": [163, 275, 20, 170]})
+    highlights.append({"img_idx": 1220, "crop_zone": [88, 200, 117, 267]})
+    highlights.append({"img_idx": 1100, "crop_zone": [88, 200, 117, 267]})
+
 
     # highlight color and thickness
     color = [255, 0, 0]
