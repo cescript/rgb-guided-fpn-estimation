@@ -4,15 +4,18 @@ from models.BESTModel import BESTModel
 from models.DLSNUCModel import DLSNUCModel
 from models.D1WLSModel import D1WLSModel
 from models.MULTIVIEWModel import MULTIVIEWModel
+from models.DCGANModel import DCGANModel
 
 # generate a FPN detector model with the given options
 def GenerateModel(model_name):
     if model_name == 'SAFTA':
-        return SAFTAModel(use_rgb=False)
+        return SAFTAModel(use_rgb=False, fpn_estimator="GRU")
     elif model_name == 'SAFTA-RGB':
-        return SAFTAModel(use_rgb=True)
+        return SAFTAModel(use_rgb=True, fpn_estimator="GRU")
     elif model_name == 'SAFTA-RGB-OLS':
-        return SAFTAModel(use_rgb=True, use_ols=True)
+        return SAFTAModel(use_rgb=True, fpn_estimator="OLS")
+    elif model_name == 'SAFTA-RGB-NIL':
+        return SAFTAModel(use_rgb=True, fpn_estimator="NIL")
     elif model_name == 'EMPTY':
         return EMPTYModel()
     elif model_name == 'BEST':
@@ -23,5 +26,7 @@ def GenerateModel(model_name):
         return D1WLSModel()
     elif model_name == 'MULTIVIEW':
         return MULTIVIEWModel()
+    elif model_name == 'DCGAN':
+        return DCGANModel()
     else:
         raise ValueError(f"Model {model_name} not found")

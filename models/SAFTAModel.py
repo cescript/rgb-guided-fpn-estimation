@@ -5,16 +5,18 @@ import torch
 from models.safta.SaftaDenoiser import SAFTADenoiser
 from models.safta.SaftaNoiseEstimator import SaftaNoiseEstimator
 from models.safta.OLSNoiseEstimator import OLSNoiseEstimator
+from models.safta.NILNoiseEstimator import NILNoiseEstimator
+from utility.GetDevice import GetDevice
 
 class SAFTAModel:
     """
         Self Attended Feature Temporal Aggregation Module for IR-FPA denoising
     """
     # constructor for the safta model
-    def __init__(self, use_rgb, use_ols=False):
+    def __init__(self, use_rgb, fpn_estimator:str):
         
         # get rgb multiplier as float
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         self.rgb_multiplier = torch.tensor(1.0 if use_rgb else 0.0, device=self.device)
         
         # create denoiser and fpn estimator
@@ -22,11 +24,16 @@ class SAFTAModel:
         self.denoiser.load_state(os.path.join("models", "safta", "weights", "best_denoiser.pth"))
         
         # pick the fpn estimator
-        if use_ols:
+        if fpn_estimator == "NIL":
+            self.fpn_estimator = NILNoiseEstimator()
+        elif fpn_estimator == "OLS":
             self.fpn_estimator = OLSNoiseEstimator()
-        else:
+        elif fpn_estimator == "GRU":
             self.fpn_estimator = SaftaNoiseEstimator(is_train_mode=False).to(self.device)
             self.fpn_estimator.load_state(os.path.join("models", "safta", "weights", "best_fpn_estimator.pth"))
+        else:
+            print(f"invalid fpn estimator")
+            exit(1)
     
     # takes noisy ir and rgb images and return fpn_estimation
     def forward(self, irn_imgs, rgb_imgs):

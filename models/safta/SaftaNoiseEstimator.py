@@ -2,6 +2,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from utility.GetDevice import GetDevice
 from torch.optim.lr_scheduler import LambdaLR
 
 # import critical components of the SAFTA
@@ -18,7 +19,7 @@ class SaftaNoiseEstimator(nn.Module):
         self.beta_scalar_offset = [0.2, 0.0]
         
         # create the device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
         
         # create sub-units of the SAFTA in GPU
         self.encoder = nn.Sequential(
@@ -118,7 +119,7 @@ class SaftaNoiseEstimator(nn.Module):
     
     # load the state of the model from checkpoint
     def load_state(self, model_name):
-        checkpoint = torch.load(model_name)
+        checkpoint = torch.load(model_name, map_location=self.device)
         self.load_state_dict(checkpoint['model_state_dict'])
         if self.is_train_mode:
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

@@ -22,7 +22,7 @@ class D1WLSNetwork(nn.Module):
     def forward(self, inImage):
         
         # implementation of d1_WLS_Destriping algorithm (inputs: CROP_SIZE x CROP_SIZE)
-        images = inImage.to(torch.float64)
+        images = inImage.to(torch.float32)
         HEIGHT = images.shape[0]
         WIDTH = images.shape[1]
         

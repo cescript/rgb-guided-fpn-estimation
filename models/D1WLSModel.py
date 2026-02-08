@@ -1,4 +1,5 @@
 import torch
+from utility.GetDevice import GetDevice
 
 # get D1WLS implementations
 from .d1wls.D1WLSNetwork import D1WLSNetwork
@@ -10,7 +11,7 @@ class D1WLSModel:
     # constructor for the D1WLS model
     def __init__(self):
         # get the device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = GetDevice()
 
         # define the D1WLS model using the D1WLSDESTRIPEDEMO parameters
         self.d1wls_model = D1WLSNetwork(lamda=40, titer=3).to(self.device)

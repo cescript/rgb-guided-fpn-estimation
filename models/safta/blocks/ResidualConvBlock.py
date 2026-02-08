@@ -5,14 +5,11 @@ class ResidualConvBlock(nn.Module):
         super().__init__()
         self.block = nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 3, padding=1),
-            nn.BatchNorm2d(out_ch),
             nn.ReLU(),
             nn.Conv2d(out_ch, out_ch, 3, padding=1),
-            nn.BatchNorm2d(out_ch)
         )
         self.shortcut = nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 1),
-            nn.BatchNorm2d(out_ch)
         )
         self.relu = nn.ReLU()
     

@@ -7,7 +7,7 @@ import torchvision.transforms.functional as tfunction
 # custom FPN dataset
 class LoadFPNDataset:
 
-    def __init__(self, image_size, noise_count, device):
+    def __init__(self, image_size, noise_count, fpn_type, device):
     
         # get the copy of the options
         self.image_size = image_size
@@ -21,15 +21,25 @@ class LoadFPNDataset:
         # narcissism parameters
         self.n_sigma = [0.1, 0.2]
         self.n_square = 32
-        self.n_probability = 1.0
         self.n_gain = [-0.1, 0.1]
-        
+
+        # pick narcissism probability
+        if fpn_type == "fpn":
+            self.n_probability = 1
+        elif fpn_type == "hfn":
+            self.n_probability = 0
+        elif fpn_type == "mixed":
+            self.n_probability = 0.5
+        else:
+            print(f"invalid fpn type, use fpn/hfn/mixed")
+            exit(1)
+
         # create noise patterns
         self.noise_patterns = []
         for idx in range(self.noise_count):
             self.noise_patterns.append(self.GenerateNoise())
 
-        print(f"FPN noise dataset loaded successfully with {self.noise_count} unique fpn")
+        print(f"FPN noise dataset loaded successfully with {self.noise_count} unique {fpn_type}")
         
     def __getitem__(self, index):
         # sample noise patterns from dataset
@@ -69,4 +79,4 @@ class LoadFPNDataset:
     @staticmethod
     def gaus2d(crop_size, mx=0, my=0, sx=1, sy=1):
         x, y = np.indices((crop_size[1], crop_size[0]))
-        return np.exp(-((x - mx) ** 2. / (2. * sx ** 2.) + (y - my) ** 2. / (2. * sy ** 2.)))
+        return np.exp(-((x - mx) ** 2. / (2. * sx ** 2.) + (y - my) ** 2. / (2. * sy ** 2.))).transpose()

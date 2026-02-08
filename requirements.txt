@@ -1,0 +1,7 @@
+piq
+torch
+torchvision
+scikit-image
+pytorch_wavelets
+PyWavelets
+opencv-python

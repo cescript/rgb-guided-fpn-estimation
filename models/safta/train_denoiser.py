@@ -14,8 +14,8 @@ def get_training_config():
     parser.add_argument('--batch_size', type=int, default=36)
     parser.add_argument('--aggregation_size', type=int, default=8)
     parser.add_argument('--epoch_count', type=int, default=1)
-    parser.add_argument('--n_epochs', type=int, default=60)
-    parser.add_argument('--n_epochs_decay', type=int, default=20)
+    parser.add_argument('--n_epochs', type=int, default=30)
+    parser.add_argument('--n_epochs_decay', type=int, default=50)
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--dataset', type=str, default="m3fd_config")
     return parser.parse_args()
@@ -27,23 +27,24 @@ if __name__ == '__main__':
     opt = get_training_config()
 
     # create dataset loader and fpn generator for training
-    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, is_train_mode=True)
+    fpn_img_loader = NoiseImageDataLoader(opt.dataset, opt.batch_size, opt.aggregation_size, "mixed", is_train_mode=True)
     
     # create model and load parameters if exist
     total_epochs = opt.n_epochs_decay + opt.n_epochs
     safta_model = SAFTADenoiser(opt.learning_rate, opt.n_epochs_decay, total_epochs, is_train_mode=True)
     
     # create a visualizer
-    visualize = OutputVisualizer("output", "denoiser", save_logs=True)
+    top_folder = os.path.join("output", "train")
+    visualize = OutputVisualizer(top_folder, "denoiser", save_logs=True)
     
     # load the pretrained weights if exist
-    weights_directory = os.path.join("output", "denoiser")
+    weights_directory = os.path.join(top_folder, "denoiser")
     if opt.epoch_count > 1:
         print(f"Loading previously trained model")
         safta_model.load_state(os.path.join(weights_directory, f"denoiser_{opt.epoch_count}.pth"))
 
     # create output directory
-    os.makedirs("output", exist_ok=True)
+    os.makedirs(top_folder, exist_ok=True)
 
     # outer loop for different epochs
     for epoch in range(opt.epoch_count, total_epochs + 1):

@@ -1,0 +1,7 @@
+{
+    "dataset_name": "tendero",
+    "dataset_path": "dataset/tendero",
+    "rgb_subdirectory": "rgb",
+    "irc_subdirectory": "irn",
+    "resize_after_load": [288, 384]
+}

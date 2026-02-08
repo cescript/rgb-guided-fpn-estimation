@@ -1,0 +1,7 @@
+{
+    "dataset_name": "BUTIV_200",
+    "dataset_path": "../dataset/butiv_200",
+    "rgb_subdirectory": "rgb",
+    "irc_subdirectory": "irn",
+    "resize_after_load": [-1, -1]
+}

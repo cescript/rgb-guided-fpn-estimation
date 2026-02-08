@@ -1,1 +1,0 @@
-Non-Uniformity Correction of Infrared Images by Midway Equalization

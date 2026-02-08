@@ -1,7 +1,0 @@
-{
-    "dataset_name": "real_dataset",
-    "dataset_path": "dataloader/dataset/real_dataset",
-    "rgb_subdirectory": "rgb",
-    "irc_subdirectory": "irn",
-    "resize_after_load": [288, 384]
-}

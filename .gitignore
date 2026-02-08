@@ -1,9 +1,12 @@
 .idea
 __pycache__
 venv
-output
+output/train
 *.pth
 *.zip
 *.png
-dataloader/dataset/images
+dataset/llvip
+dataset/m3fd
+dataset/msrs
+dataset/tendero
 .DS_Store
