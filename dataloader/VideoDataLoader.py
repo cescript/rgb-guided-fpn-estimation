@@ -11,7 +11,7 @@ import torchvision.transforms.functional as tfunction
 
 # assumes that images are labeled as 00000_00.png, 00000_01.png
 class VideoDataLoader:
-    def __init__(self, dataset_config, aggregation_size):
+    def __init__(self, dataset_config, aggregation_size, max_load):
     
         # assert on error
         config_file = os.path.join("dataloader", "configs", f"{dataset_config}.json")
@@ -41,6 +41,7 @@ class VideoDataLoader:
             
         # dataset options
         self.aggregation_size = aggregation_size    # number of noisy image for each FPN pattern
+        self.max_load = max_load
         self.video_idx = 0
         self.image_idx = 0
         self.lower = 0
@@ -66,6 +67,10 @@ class VideoDataLoader:
         return_video_name = self.irn_keys[self.video_idx]
         return_video_frame = self.image_idx
         irn_selected = self.irn_paths[self.irn_keys[self.video_idx]]
+
+        # limit the number of images for each dataset
+        if self.max_load > 0:
+            irn_selected = irn_selected[:self.max_load]
 
         # compute 16->8 bit transformation at first
         if self.image_idx == 0:
