@@ -1,3 +1,4 @@
+import os
 import torch
 import models
 import argparse
@@ -25,20 +26,26 @@ if __name__ == '__main__':
     opt = get_test_config()
 
     # create a visualizer
-    visualize = OutputVisualizer("output", f"{opt.dataset}_{opt.keep_fpn}", save_logs=True)
+    top_folder = os.path.join("output", "video_comparison")
+    output_folder = f"{opt.dataset}_{opt.keep_fpn}"
+    visualize = OutputVisualizer(top_folder, output_folder, save_logs=True)
+    metric_evaluator = MetricEvaluator(top_folder, output_folder, reference=False)
 
     # set the model names to be evaluated
-    model_names = ["SAFTA-RGB"]
+    model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
 
     # loop over all models and test the results
     for mid, model_name in enumerate(model_names):
         print("Evaluating %s model..." % model_name)
 
         # create a real world dataset loader
-        noisy_img_loader = VideoDataLoader(opt.dataset, opt.aggregation_size)
+        noisy_img_loader = VideoDataLoader(opt.dataset, opt.aggregation_size, 10)
 
         # create a model given opt.model and other options
         model = models.GenerateModel(model_name)
+
+        # start the evaluation of the model
+        metric_evaluator.start(model_name)
 
         # start the image loader
         # irn_imgs: K x [1 x HEIGHT x WIDTH]
@@ -53,6 +60,12 @@ if __name__ == '__main__':
 
             # save the first image
             visualize.save_inference_results(video_name, frame_counter, rgb_imgs[0], irn_imgs[0], irn_imgs[0], ire_imgs[0])
+
+            # evaluate the results
+            metric_evaluator.evaluate(None, torch.stack(ire_imgs, dim=0))
+
+        # save the metric to given file
+        metric_evaluator.save_metrics(reduction="mean")
 
 
 
