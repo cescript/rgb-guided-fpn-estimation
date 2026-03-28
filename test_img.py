@@ -29,28 +29,38 @@ if __name__ == '__main__':
         model_names = ["SAFTA-RGB", "DCGAN", "MULTIVIEW", "D1WLS", "DLSNUC", "EMPTY"]
         aggregation_sizes = [12]
         fpn_types = ["fpn", "hfn"]
+        shift_values = [0]
     elif opt.test_case == "ablation":
         # for ablation
         dataset_names = ["m3fd_config"]
         model_names = ["SAFTA-RGB", "SAFTA", "SAFTA-RGB-NIL", "SAFTA-RGB-OLS"]
         aggregation_sizes = [12]
         fpn_types = ["fpn", "hfn"]
+        shift_values = [0]
     elif opt.test_case == "k_effect":
         # for K analysis
         dataset_names = ["m3fd_config"]
         model_names = ["SAFTA-RGB", "SAFTA-RGB-OLS", "MULTIVIEW"]
         aggregation_sizes = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
         fpn_types = ["fpn", "hfn"]
+        shift_values = [0]
+    elif opt.test_case == "shift":
+        # for spatial misalignment robustness analysis
+        dataset_names = ["m3fd_config"]
+        model_names = ["SAFTA-RGB"]
+        aggregation_sizes = [12]
+        fpn_types = ["fpn", "hfn"]
+        shift_values = [1, 2, 4, 8, 16, 32]
     else:
         print(f"invalid test case: {opt.test_case}, choose on of comparison/ablation/k_effect")
         exit(1)
 
     # loop over all cases
-    for dataset, aggregation, fpn_type in product(dataset_names, aggregation_sizes, fpn_types):
+    for dataset, aggregation, fpn_type, shift in product(dataset_names, aggregation_sizes, fpn_types, shift_values):
 
         # create test output name
         top_folder = os.path.join("output", opt.test_case)
-        output_folder = f"{dataset}_K_{aggregation}_{fpn_type}"
+        output_folder = f"{dataset}_K_{aggregation}_{fpn_type}" if shift == 0 else f"{dataset}_K_{aggregation}_{fpn_type}_shift_{shift}"
 
         # create a visualizer and metric evaluator
         visualize = OutputVisualizer(top_folder, output_folder, save_logs=True)
@@ -77,6 +87,10 @@ if __name__ == '__main__':
                 # rgb_imgs: K x [3 x HEIGHT x WIDTH]
                 irn_imgs = [fpn_insert(irc_img[idx], fpn_img).squeeze(0) for idx in range(irc_img.shape[0])]
                 rgb_imgs = [rgb_img[idx] for idx in range(rgb_img.shape[0])]
+
+                # apply fixed spatial shift to RGB images for misalignment robustness test
+                if shift > 0:
+                    rgb_imgs = [torch.roll(torch.roll(r, shift, dims=-1), shift, dims=-2) for r in rgb_imgs]
 
                 # fpn_imgs: K x [2 x HEIGHT x WIDTH]
                 fpn_imgs = model.forward(irn_imgs, rgb_imgs)

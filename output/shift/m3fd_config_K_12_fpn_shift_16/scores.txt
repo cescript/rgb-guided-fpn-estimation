@@ -1,0 +1,2 @@
+# SAFTA-RGB,psnr, ssim, gmsd,avgtime
+39.3329, 0.9949, 0.0018, 27.0454
