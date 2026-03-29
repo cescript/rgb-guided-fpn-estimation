@@ -4,6 +4,7 @@ import argparse
 from metrics import MetricEvaluator
 from utility.OutputVisualizer import OutputVisualizer
 from utility.FPNUtility import fpn_insert, fpn_remove
+from utility.FPNBuffer import FPNBuffer
 
 # import required classes
 from dataloader.RealImageDataLoader import RealImageDataLoader
@@ -14,6 +15,7 @@ def get_test_config():
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--aggregation_size', type=int, default=12)
     parser.add_argument('--dataset', type=str, default="butiv_200")
+    parser.add_argument('--save_fpn', type=bool, default=False)
     return parser.parse_args()
 
 # run test code
@@ -29,7 +31,8 @@ if __name__ == '__main__':
 
     # create a metric evaluator class
     metric_evaluator = MetricEvaluator("output", f"{opt.dataset}", reference=False)
-    
+    fpn_buffer = FPNBuffer("output", f"{opt.dataset}")
+
     # loop over all models and test the results
     for mid, model_name in enumerate(model_names):
         print("Evaluating %s model..." % model_name)
@@ -42,6 +45,7 @@ if __name__ == '__main__':
 
         # start the evaluation of the model
         metric_evaluator.start(model_name)
+        fpn_buffer.start()
 
         # start the image loader
         # irn_imgs: K x [1 x HEIGHT x WIDTH]
@@ -58,6 +62,10 @@ if __name__ == '__main__':
             # evaluate the result of the clean image
             metric_evaluator.evaluate(None, torch.stack(ire_imgs, dim=0))
 
+            # put the fpn buffer result into memory
+            if opt.save_fpn:
+                fpn_buffer.evaluate(fpn_imgs[0])
+
             # save the every 20th image
             if image_index % 10 == 0:
                 visualize.save_fpn_results(model_name, image_index, fpn_imgs[0], fpn_imgs[0])
@@ -66,9 +74,9 @@ if __name__ == '__main__':
             # evaluate the result of the clean image
             image_index += 1
 
-
         # save the metric to given file
         metric_evaluator.save_metrics(reduction="mean")
+        fpn_buffer.save(model_name)
             
         
     
