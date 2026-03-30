@@ -98,7 +98,7 @@ class RealImageDataLoader:
             self.image_idx = 0
         
         # return noisy ir and rgb image
-        return rgb_imgs, irn_imgs
+        return rgb_imgs, irn_imgs, self.video_idx, self.image_idx
         
     def __len__(self):
         return self.image_count

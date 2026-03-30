@@ -1,0 +1,12 @@
+# SAFTA-RGB,brisque, clip_iqa,avgtime
+27.1719, 0.4531, 24.9603
+# DCGAN,brisque, clip_iqa,avgtime
+38.9214, 0.4499, 24.3984
+# MULTIVIEW,brisque, clip_iqa,avgtime
+56.0533, 0.4346, 24.0973
+# D1WLS,brisque, clip_iqa,avgtime
+28.4631, 0.4195, 29.9423
+# DLSNUC,brisque, clip_iqa,avgtime
+30.8549, 0.4073, 23.8387
+# EMPTY,brisque, clip_iqa,avgtime
+40.4907, 0.5159, 23.8593
