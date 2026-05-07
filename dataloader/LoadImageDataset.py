@@ -64,7 +64,7 @@ class LoadImageDataset:
 
         # return RGB and IR pairs
         return tA, tB
-    
+
     def __len__(self):
         return self.image_count
 
@@ -124,3 +124,6 @@ class LoadImageDataset:
 
     def GetTrainTestRatio(self):
         return self.train_test_ratio
+
+    def GetImageStem(self, index):
+        return os.path.splitext(os.path.basename(self.irc_paths[index]))[0]
