@@ -5,10 +5,11 @@ from utility.GetDevice import GetDevice
 from torch.optim.lr_scheduler import LambdaLR
 
 # import critical components of the SAFTA
+from models.safta.blocks import MultiScaleFusion, SEBlock
 from models.safta.blocks import LowHighFrequencyLoss
 
 class SAFTADenoiser(nn.Module):
-    def __init__(self, learning_rate=0.0001, decay_start_epoch = 100, total_epochs=100, is_train_mode=False):
+    def __init__(self, learning_rate=0.0001, decay_start_epoch = 100, total_epochs=100, is_train_mode=False, fusion_block=None):
         super().__init__()
         
         # set the device type
@@ -16,9 +17,29 @@ class SAFTADenoiser(nn.Module):
         
         # set base channel for encoders
         bc = 24
-        self.pre_conv1 = nn.Sequential(nn.Conv2d( 4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.pre_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
-        self.pre_conv3 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        self.fusion_block = fusion_block
+
+        if self.fusion_block is None:
+            self.pre_conv1 = nn.Sequential(nn.Conv2d(4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+            self.pre_conv2 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+            self.pre_conv3 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
+        else:
+            # create models for ablation studies
+            if fusion_block == "basic":
+                self.fusion = nn.Sequential(
+                    nn.Conv2d( 4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU(),
+                    nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU(),
+                    nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()
+                )
+            elif fusion_block == "multiscale":
+                self.fusion = MultiScaleFusion(bc=bc)
+            elif fusion_block == "attention":
+                self.fusion = nn.Sequential(
+                    nn.Conv2d(4, bc, kernel_size=3, stride=1, padding=1), nn.ReLU(),
+                    SEBlock(bc)
+                )
+            # define the fusion block on device
+            self.fusion.to(self.device)
 
         # simple residual computation blocks
         self.res_conv1 = nn.Sequential(nn.Conv2d(bc, bc, kernel_size=3, stride=1, padding=1), nn.ReLU()).to(self.device)
@@ -85,9 +106,14 @@ class SAFTADenoiser(nn.Module):
 
         # INPUT BLOCK
         net_in_norm, std_ir = self.normalize_input(net_in)
-        a1 = self.pre_conv1(net_in_norm)
-        a2 = self.pre_conv2(a1)
-        a3 = self.pre_conv2(a2)
+
+        # make classical fusion or try alternatives for ablation
+        if self.fusion_block is None:
+            a1 = self.pre_conv1(net_in_norm)
+            a2 = self.pre_conv2(a1)
+            a3 = self.pre_conv2(a2)
+        else:
+            a3 = self.fusion(net_in_norm)
 
         # ENCODER BLOCK for RGB GUIDANCE
         e1 = self.enc_conv1(a3)

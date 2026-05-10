@@ -1,0 +1,6 @@
+# SAFTA-RGB-NIL_basic,psnr, ssim, gmsd,avgtime
+48.0406, 0.9970, 0.0025, 24.7754
+# SAFTA-RGB-NIL_attention,psnr, ssim, gmsd,avgtime
+47.7554, 0.9970, 0.0025, 25.0666
+# SAFTA-RGB-NIL_multiscale,psnr, ssim, gmsd,avgtime
+47.3688, 0.9969, 0.0025, 25.6480
