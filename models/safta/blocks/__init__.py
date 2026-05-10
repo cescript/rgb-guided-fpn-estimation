@@ -4,3 +4,4 @@ from models.safta.blocks.FixedPatternNoiseDecoder import FixedPatternNoiseDecode
 from models.safta.blocks.LowHighFrequencyLoss import LowHighFrequencyLoss
 from models.safta.blocks.ResidualConvBlock import ResidualConvBlock
 from models.safta.blocks.SimpleConvGRUCell import SimpleConvGRUCell
+from models.safta.blocks.AblationMethods import MultiScaleFusion, SEBlock
