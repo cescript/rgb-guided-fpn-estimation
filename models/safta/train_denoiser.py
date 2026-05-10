@@ -12,10 +12,10 @@ from dataloader.NoiseImageDataLoader import NoiseImageDataLoader
 def get_training_config():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=36)
-    parser.add_argument('--aggregation_size', type=int, default=8)
+    parser.add_argument('--aggregation_size', type=int, default=12)
     parser.add_argument('--epoch_count', type=int, default=1)
-    parser.add_argument('--n_epochs', type=int, default=30)
-    parser.add_argument('--n_epochs_decay', type=int, default=50)
+    parser.add_argument('--n_epochs', type=int, default=40)
+    parser.add_argument('--n_epochs_decay', type=int, default=20)
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--dataset', type=str, default="m3fd_config")
     return parser.parse_args()
